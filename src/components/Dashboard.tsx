@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react'
-import {Grid, Typography, Paper, FormLabel, FormControl, FormGroup, FormControlLabel, FormHelperText, Checkbox, CircularProgress, Button} from '@material-ui/core'
+import {Grid, Typography, Paper, FormLabel, FormControl, FormGroup, FormControlLabel, Checkbox } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 import { getMultipleMeasurementsQuery } from '../queries';
+import Chart from './Chart';
 
 
 type Props = {}
 
 interface genericObj {
     metric: string
-    at: number 
-    value: number 
+    at: number | string
+    value: number | string
     unit: string
 }
 
 interface containerType {
     metric: string
     at: number | string
-    value: number
+    value: number | string
     unit: string 
 }
 
@@ -64,12 +65,12 @@ const Dashboard = (props: Props) => {
     const [getMultipleMeasurements, setGetMultipleMeasurements] = useState<null | []>(null);
 
     // Array States to hold their respective metric data
-    const [oilTempArray, setOilTempArray] = useState<null | []>(null);
-    const [tubingPressureArray, setTubingPressureArray] = useState<null | []>(null);
-    const [injValveOpenArray, setInjValveOpenArray] = useState<null | []>(null);
-    const [flareTempArray, setFlareTempArray] = useState<null | []>(null);
-    const [casingPressureArray, setCasingPressureArray] = useState<null | []>(null);
-    const [waterTempArray, setWaterTempArray] = useState<null | []>(null);
+    const [oilTempArray, setOilTempArray] = useState<genericObj[]>([]);
+    const [tubingPressureArray, setTubingPressureArray] = useState<genericObj[]>([]);
+    const [injValveOpenArray, setInjValveOpenArray] = useState<genericObj[]>([]);
+    const [flareTempArray, setFlareTempArray] = useState<genericObj[]>([]);
+    const [casingPressureArray, setCasingPressureArray] = useState<genericObj[]>([]);
+    const [waterTempArray, setWaterTempArray] = useState<genericObj[]>([]);
 
     // useEffect for getting Multiple Measurements api query and array manipulations on page load
     useEffect(() => {
@@ -92,7 +93,7 @@ const Dashboard = (props: Props) => {
                     value: 0,
                     unit: '' 
                 };
-                const timestamp: number = element.at;
+                const timestamp: number | string = element.at;
                 const date: Date = new Date(timestamp);
                 const fullDate: string = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) 
                 
@@ -118,7 +119,7 @@ const Dashboard = (props: Props) => {
                     value: 0,
                     unit: '' 
                 };
-                const timestamp: number = element.at;
+                const timestamp: number | string = element.at;
                 const date: Date = new Date(timestamp);
                 const fullDate: string = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) 
     
@@ -143,10 +144,15 @@ const Dashboard = (props: Props) => {
                     value: 0,
                     unit: '' 
                 };
-                const timestamp: number = element.at;
+                const timestamp: number | string = element.at;
                 const date: Date = new Date(timestamp);
                 const fullDate: string = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) 
     
+                container.metric = element.metric;
+                container.at = fullDate;
+                container.value = element.value;
+                container.unit = element.unit;
+
                 // console.log('Here is the tubing pressure container: ', container);
     
                 return container;
@@ -163,10 +169,15 @@ const Dashboard = (props: Props) => {
                     value: 0,
                     unit: '' 
                 };
-                const timestamp: number = element.at;
+                const timestamp: number | string = element.at;
                 const date: Date = new Date(timestamp);
                 const fullDate: string = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) 
     
+                container.metric = element.metric;
+                container.at = fullDate;
+                container.value = element.value;
+                container.unit = element.unit;
+                
                 // console.log('Here is the flare temperature container: ', container);
     
                 return container;
@@ -183,7 +194,7 @@ const Dashboard = (props: Props) => {
                     value: 0,
                     unit: '' 
                 };
-                const timestamp: number = element.at;
+                const timestamp: number | string = element.at;
                 const date: Date = new Date(timestamp);
                 const fullDate: string = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) 
     
@@ -208,7 +219,7 @@ const Dashboard = (props: Props) => {
                     value: 0,
                     unit: '' 
                 };
-                const timestamp: number = element.at;
+                const timestamp: number | string = element.at;
                 const date: Date = new Date(timestamp);
                 const fullDate: string = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) 
     
@@ -358,27 +369,27 @@ const Dashboard = (props: Props) => {
                             <FormLabel component="legend">Select a metric</FormLabel>
                             <FormGroup>
                                 <FormControlLabel
-                                    control={<Checkbox checked={oilTempBool} onChange={(event) => handleCheckboxChange(event, 0)} name="oilTempBool" />}
+                                    control={<Checkbox checked={oilTempBool} onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCheckboxChange(event, 0)} name="oilTempBool" />}
                                     label="oilTemp"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={tubingPressureBool} onChange={(event) => handleCheckboxChange(event, 1)} name="tubingPressureBool" />}
+                                    control={<Checkbox checked={tubingPressureBool} onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCheckboxChange(event, 1)} name="tubingPressureBool" />}
                                     label="tubingPressure"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={injValveOpenBool} onChange={(event) => handleCheckboxChange(event, 2)} name="injValveOpenBool" />}
+                                    control={<Checkbox checked={injValveOpenBool} onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCheckboxChange(event, 2)} name="injValveOpenBool" />}
                                     label="InjValveOpen"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={flareTempBool} onChange={(event) => handleCheckboxChange(event, 3)} name="flareTempBool" />}
+                                    control={<Checkbox checked={flareTempBool} onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCheckboxChange(event, 3)} name="flareTempBool" />}
                                     label="flareTemp"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={casingPressureBool} onChange={(event) => handleCheckboxChange(event, 4)} name="casingPressureBool" />}
+                                    control={<Checkbox checked={casingPressureBool} onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCheckboxChange(event, 4)} name="casingPressureBool" />}
                                     label="casingPressure"
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={waterTempBool} onChange={(event) => handleCheckboxChange(event, 5)} name="waterTempBool" />}
+                                    control={<Checkbox checked={waterTempBool} onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCheckboxChange(event, 5)} name="waterTempBool" />}
                                     label="waterTemp"
                                 />
                             </FormGroup>
